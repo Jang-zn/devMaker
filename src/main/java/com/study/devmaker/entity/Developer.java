@@ -30,7 +30,7 @@ public class Developer {
     @Enumerated(EnumType.STRING)
     private DeveloperSkillType developerSkillType;
 
-    private int experienceYear;
+    private int experienceYears;
 
     private String memberId;
     private String name;

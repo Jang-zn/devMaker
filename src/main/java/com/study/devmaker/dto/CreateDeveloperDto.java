@@ -3,11 +3,9 @@ package com.study.devmaker.dto;
 import com.study.devmaker.entity.Developer;
 import com.study.devmaker.type.DeveloperLevel;
 import com.study.devmaker.type.DeveloperSkillType;
-import jdk.jfr.MemoryAddress;
 import lombok.*;
 import org.hibernate.validator.constraints.Range;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -28,7 +26,7 @@ public class CreateDeveloperDto {
 
         @NotNull
         @Range(min=0, max=20)
-        private int experimentYear;
+        private int experienceYears;
 
         @NotNull
         @Size(min=6, max=20, message="이름은 6~20byte 이내로 작성해주세요")
@@ -51,7 +49,7 @@ public class CreateDeveloperDto {
     public static class Response{
         private DeveloperLevel developerLevel;
         private DeveloperSkillType developerSkillType;
-        private int experimentYear;
+        private int experienceYears;
 
         private String memberId;
 
@@ -59,7 +57,7 @@ public class CreateDeveloperDto {
             return Response.builder().
                     developerLevel(dev.getDeveloperLevel()).
                     developerSkillType(dev.getDeveloperSkillType()).
-                    experimentYear(dev.getExperienceYear()).
+                    experienceYears(dev.getExperienceYears()).
                     memberId(dev.getMemberId()).
                     build();
         }

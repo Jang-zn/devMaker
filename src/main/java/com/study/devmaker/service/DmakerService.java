@@ -34,7 +34,7 @@ public class DmakerService {
             Developer developer = Developer.builder()
                     .developerLevel(request.getDeveloperLevel())
                     .developerSkillType(request.getDeveloperSkillType())
-                    .experienceYear(request.getExperimentYear())
+                    .experienceYears(request.getExperienceYears())
                     .memberId(request.getMemberId())
                     .age(request.getAge())
                     .name(request.getName())
@@ -46,18 +46,18 @@ public class DmakerService {
     //비즈니스 정책에 따른 검증 수행
     private void validateCreateDeveloperRequest(CreateDeveloperDto.Request request) {
         DeveloperLevel developerLevel = request.getDeveloperLevel();
-        int experimentYear = request.getExperimentYear();
+        int experimentYear = request.getExperienceYears();
 
         if(developerLevel ==DeveloperLevel.SENIOR
         && experimentYear <10){
             //정책상 발생하는 Exception은 custom Exception으로 구현해주는게 더 명확함.
             throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
         }
-        if(developerLevel ==DeveloperLevel.JUNIOR
-        && (experimentYear <4|| experimentYear >10)){
+        if(developerLevel==DeveloperLevel.JUNIOR
+        && (4>experimentYear|| experimentYear>10)){
             throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
         }
-        if(developerLevel==DeveloperLevel.JUNIOR&&experimentYear>4){
+        if(developerLevel==DeveloperLevel.NEW&&experimentYear>4){
             throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
         }
 
