@@ -1,5 +1,6 @@
 package com.study.devmaker.dto;
 
+import com.study.devmaker.entity.Developer;
 import com.study.devmaker.type.DeveloperLevel;
 import com.study.devmaker.type.DeveloperSkillType;
 import jdk.jfr.MemoryAddress;
@@ -41,12 +42,27 @@ public class CreateDeveloperDto {
         private int age;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
     public static class Response{
         private DeveloperLevel developerLevel;
         private DeveloperSkillType developerSkillType;
         private int experimentYear;
 
         private String memberId;
+
+        public static Response fromEntity(Developer dev){
+            return Response.builder().
+                    developerLevel(dev.getDeveloperLevel()).
+                    developerSkillType(dev.getDeveloperSkillType()).
+                    experimentYear(dev.getExperienceYear()).
+                    memberId(dev.getMemberId()).
+                    build();
+        }
     }
 
 }

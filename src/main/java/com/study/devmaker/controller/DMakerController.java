@@ -25,18 +25,16 @@ public class DMakerController {
     public List<String> getAllDevelopers(){
         //GET /devs HTTP/1.1 요청이 오면 이게 응답함
         log.info("GET /devs HTTP/1.1");
-        return Arrays.asList("J","P","G");
+        return Arrays.asList("T","E","S","T");
     }
 
     @PostMapping("/create-devs")
-    public List<String> createDevelopers(
+    public CreateDeveloperDto.Response createDevelopers(
             @Valid @RequestBody CreateDeveloperDto.Request request
             ){
-        //GET /devs HTTP/1.1 요청이 오면 이게 응답함
         log.info("POST /create-devs HTTP/1.1");
         log.info("request : {}", request);
-        dmakerService.createDeveloper(request);
-        return Collections.singletonList("Jang");
+        return dmakerService.createDeveloper(request);
     }
 
 

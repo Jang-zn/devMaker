@@ -29,17 +29,18 @@ public class DmakerService {
     private final DevRepository devRepository;
 
     @Transactional
-    public void createDeveloper(CreateDeveloperDto.Request request){
+    public CreateDeveloperDto.Response createDeveloper(CreateDeveloperDto.Request request){
         validateCreateDeveloperRequest(request);
             Developer developer = Developer.builder()
-                    .developerLevel(DeveloperLevel.NEW)
-                    .developerSkillType(DeveloperSkillType.BACKEND)
-                    .experienceYear(1)
-                    .memberId("zn2309")
-                    .age(30)
-                    .name("Jang")
+                    .developerLevel(request.getDeveloperLevel())
+                    .developerSkillType(request.getDeveloperSkillType())
+                    .experienceYear(request.getExperimentYear())
+                    .memberId(request.getMemberId())
+                    .age(request.getAge())
+                    .name(request.getName())
                     .build();
             devRepository.save(developer);
+            return CreateDeveloperDto.Response.fromEntity(developer);
     }
 
     //비즈니스 정책에 따른 검증 수행
