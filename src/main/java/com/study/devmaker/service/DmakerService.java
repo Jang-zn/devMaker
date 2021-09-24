@@ -18,13 +18,9 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class DmakerService {
     private final DevRepository devRepository;
-    private final EntityManager em;
 
     @Transactional
     public void createDeveloper(){
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
             Developer developer = Developer.builder()
                     .developerLevel(DeveloperLevel.NEW)
                     .developerSkillType(DeveloperSkillType.BACKEND)
@@ -33,14 +29,6 @@ public class DmakerService {
                     .age(30)
                     .name("Jang")
                     .build();
-            //예시라서 걍 코드는 생략했는데 입출금이 밑에서 실행된다고 쳤을때
             devRepository.save(developer);
-            transaction.commit();
-            //중간에 뭔가 오류가 발생하면 exception처리
-        }catch(Exception e){
-            //중간에 수틀리면 롤백한다.
-            transaction.rollback();
-            throw e;
-        }
     }
 }
