@@ -3,12 +3,14 @@ package com.study.devmaker.service;
 import com.study.devmaker.dto.CreateDeveloperDto;
 import com.study.devmaker.dto.DeveloperDetailDto;
 import com.study.devmaker.dto.DeveloperDto;
+import com.study.devmaker.dto.EditDeveloperDto;
 import com.study.devmaker.entity.Developer;
 import com.study.devmaker.exception.DMakerErrorCode;
 import com.study.devmaker.exception.DMakerException;
 import com.study.devmaker.repository.DevRepository;
 import com.study.devmaker.type.DeveloperLevel;
 import com.study.devmaker.type.DeveloperSkillType;
+import com.study.devmaker.type.StatusCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,35 +43,10 @@ public class DmakerService {
                     .memberId(request.getMemberId())
                     .age(request.getAge())
                     .name(request.getName())
+                    .statusCode(StatusCode.EMPLOYED)
                     .build();
             devRepository.save(developer);
             return CreateDeveloperDto.Response.fromEntity(developer);
-    }
-
-    //비즈니스 정책에 따른 검증 수행
-    private void validateCreateDeveloperRequest(CreateDeveloperDto.Request request) {
-        DeveloperLevel developerLevel = request.getDeveloperLevel();
-        int experimentYear = request.getExperienceYears();
-
-        if(developerLevel ==DeveloperLevel.SENIOR
-        && experimentYear <10){
-            //정책상 발생하는 Exception은 custom Exception으로 구현해주는게 더 명확함.
-            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
-        }
-        if(developerLevel==DeveloperLevel.JUNIOR
-        && (4>experimentYear|| experimentYear>10)){
-            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
-        }
-        if(developerLevel==DeveloperLevel.NEW&&experimentYear>4){
-            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
-        }
-
-        //Id중복 검증
-        //변수로 받고 if문으로 null인지 아닌지 다시 확인할 필요 없음 (콜백함수, 람다식 이용 java8부터 가능한거임..)
-        devRepository.findByMemberId(request.getMemberId()).ifPresent((developer -> {
-            throw new DMakerException(DUPLICATED_ID);
-        }));
-
     }
 
     public List<DeveloperDto> getAllDevelopers() {
@@ -84,5 +61,58 @@ public class DmakerService {
         return devRepository.findByMemberId(memberId)
                 .map(DeveloperDetailDto::fromEntity)
                 .orElseThrow(()->new DMakerException(NO_DEVELOPER));
+    }
+
+    @Transactional
+    public DeveloperDetailDto updateDeveloper(String memberId, EditDeveloperDto.Request request) {
+        validateLevelAndExp(
+                request.getDeveloperLevel(),
+                request.getExperienceYears()
+        );
+        Developer developer=devRepository
+                .findByMemberId(memberId)
+                .orElseThrow(()->new DMakerException(NO_DEVELOPER));
+
+        developer.setDeveloperLevel(request.getDeveloperLevel());
+        developer.setDeveloperSkillType(request.getDeveloperSkillType());
+        developer.setExperienceYears(request.getExperienceYears());
+        //
+        return DeveloperDetailDto.fromEntity(developer);
+    }
+
+
+    //비즈니스 정책에 따른 검증 수행
+    private void validateCreateDeveloperRequest(CreateDeveloperDto.Request request) {
+        validateLevelAndExp(
+                request.getDeveloperLevel(),
+                request.getExperienceYears()
+        );
+        //Id중복 검증
+        //변수로 받고 if문으로 null인지 아닌지 다시 확인할 필요 없음 (콜백함수, 람다식 이용 java8부터 가능한거임..)
+        devRepository.findByMemberId(request.getMemberId()).ifPresent((developer -> {
+            throw new DMakerException(DUPLICATED_ID);
+        }));
+
+    }
+
+
+    private void validateLevelAndExp(DeveloperLevel developerLevel, int experimentYear) {
+        if(developerLevel ==DeveloperLevel.SENIOR
+                && experimentYear <10){
+            //정책상 발생하는 Exception은 custom Exception으로 구현해주는게 더 명확함.
+            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
+        }
+        if(developerLevel==DeveloperLevel.JUNIOR
+                && (4>experimentYear|| experimentYear>10)){
+            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
+        }
+        if(developerLevel==DeveloperLevel.NEW&&experimentYear>4){
+            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
+        }
+    }
+
+    @Transactional
+    public DeveloperDetailDto deleteDeveloper(String memberId) {
+
     }
 }

@@ -6,3 +6,13 @@ Accept: application/json
 ### GET request with a header
 GET  http://localhost:9090/get-devList/zn2309
 Accept: application/json
+
+### PUT request with a header
+PUT http://localhost:9090/update-dev/zn2309
+Content-Type: application/json
+
+{
+  "developerLevel": "SENIOR",
+  "developerSkillType": "BACKEND",
+  "experienceYears": 17
+}

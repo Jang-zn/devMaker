@@ -4,6 +4,7 @@ package com.study.devmaker.controller;
 import com.study.devmaker.dto.CreateDeveloperDto;
 import com.study.devmaker.dto.DeveloperDetailDto;
 import com.study.devmaker.dto.DeveloperDto;
+import com.study.devmaker.dto.EditDeveloperDto;
 import com.study.devmaker.service.DmakerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,22 @@ public class DMakerController {
         log.info("POST /create-devs HTTP/1.1");
         log.info("request : {}", request);
         return dmakerService.createDeveloper(request);
+    }
+
+    @PutMapping("/update-dev/{memberId}")
+    public DeveloperDetailDto updateDeveloper(
+            @PathVariable String memberId,
+            @Valid @RequestBody EditDeveloperDto.Request request
+    ){
+        log.info("request : {}", request);
+        DeveloperDetailDto response =dmakerService.updateDeveloper(memberId, request);
+        log.info("response : {}", response);
+        return response;
+    }
+
+    @DeleteMapping("/delete-dev/{memberId}")
+    public DeveloperDetailDto deleteDeveloper(@PathVariable String memberId){
+        return dmakerService.deleteDeveloper(memberId);
     }
 
 
