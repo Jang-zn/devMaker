@@ -1,0 +1,3 @@
+### DELETE request with a header
+DELETE http://localhost:9090/delete-dev/zn2309
+Accept: application/json
