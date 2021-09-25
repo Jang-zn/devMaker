@@ -5,9 +5,11 @@ import com.study.devmaker.dto.DeveloperDetailDto;
 import com.study.devmaker.dto.DeveloperDto;
 import com.study.devmaker.dto.EditDeveloperDto;
 import com.study.devmaker.entity.Developer;
+import com.study.devmaker.entity.RetiredDeveloper;
 import com.study.devmaker.exception.DMakerErrorCode;
 import com.study.devmaker.exception.DMakerException;
 import com.study.devmaker.repository.DevRepository;
+import com.study.devmaker.repository.RetiredDevRepository;
 import com.study.devmaker.type.DeveloperLevel;
 import com.study.devmaker.type.DeveloperSkillType;
 import com.study.devmaker.type.StatusCode;
@@ -32,6 +34,7 @@ import static com.study.devmaker.exception.DMakerErrorCode.*;
 @RequiredArgsConstructor
 public class DmakerService {
     private final DevRepository devRepository;
+    private final RetiredDevRepository retiredDevRepository;
 
     @Transactional
     public CreateDeveloperDto.Response createDeveloper(CreateDeveloperDto.Request request){
@@ -49,8 +52,8 @@ public class DmakerService {
             return CreateDeveloperDto.Response.fromEntity(developer);
     }
 
-    public List<DeveloperDto> getAllDevelopers() {
-        return devRepository.findAll()
+    public List<DeveloperDto> getAllEmployedDevelopers() {
+        return devRepository.findDevelopersByStatusCode(StatusCode.EMPLOYED)
                 .stream()
                 .map(DeveloperDto::fromEntity)
                 .collect(Collectors.toList());
@@ -113,6 +116,16 @@ public class DmakerService {
 
     @Transactional
     public DeveloperDetailDto deleteDeveloper(String memberId) {
-
+        //1. Employed->Retired
+            Developer developer = devRepository.findByMemberId(memberId)
+                    .orElseThrow(()->new DMakerException(NO_DEVELOPER));
+            developer.setStatusCode(StatusCode.RETIRED);
+        //2. RetiredDeveloper Table에 추가
+        RetiredDeveloper retiredDeveloper = RetiredDeveloper.builder()
+                .memberId(developer.getMemberId())
+                .name(developer.getName())
+                .build();
+        retiredDevRepository.save(retiredDeveloper);
+        return DeveloperDetailDto.fromEntity(developer);
     }
 }

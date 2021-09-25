@@ -3,6 +3,7 @@ package com.study.devmaker.dto;
 import com.study.devmaker.entity.Developer;
 import com.study.devmaker.type.DeveloperLevel;
 import com.study.devmaker.type.DeveloperSkillType;
+import com.study.devmaker.type.StatusCode;
 import lombok.*;
 
 @Getter
@@ -15,7 +16,7 @@ public class DeveloperDetailDto {
     private DeveloperLevel developerLevel;
     private DeveloperSkillType developerSkillType;
     private int experienceYears;
-
+    private StatusCode statusCode;
     private String memberId;
     private String name;
     private int age;
@@ -28,6 +29,7 @@ public class DeveloperDetailDto {
                 memberId(dev.getMemberId()).
                 name(dev.getName()).
                 age(dev.getAge()).
+                statusCode(dev.getStatusCode()).
                 build();
     }
 }
