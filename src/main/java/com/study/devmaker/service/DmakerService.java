@@ -1,6 +1,8 @@
 package com.study.devmaker.service;
 
 import com.study.devmaker.dto.CreateDeveloperDto;
+import com.study.devmaker.dto.DeveloperDetailDto;
+import com.study.devmaker.dto.DeveloperDto;
 import com.study.devmaker.entity.Developer;
 import com.study.devmaker.exception.DMakerErrorCode;
 import com.study.devmaker.exception.DMakerException;
@@ -15,10 +17,11 @@ import javax.persistence.EntityTransaction;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.study.devmaker.exception.DMakerErrorCode.DUPLICATED_ID;
-import static com.study.devmaker.exception.DMakerErrorCode.LEVEL_EXPERIMENT_YEAR_NOT_MATCHED;
+import static com.study.devmaker.exception.DMakerErrorCode.*;
 
 
 //RequiredArgsConstructor 붙여주면 Repository class final 선언으로 생성시마다 주입되게 설정 가능
@@ -67,5 +70,19 @@ public class DmakerService {
             throw new DMakerException(DUPLICATED_ID);
         }));
 
+    }
+
+    public List<DeveloperDto> getAllDevelopers() {
+        return devRepository.findAll()
+                .stream()
+                .map(DeveloperDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
+    public DeveloperDetailDto getDeveloper(String memberId) {
+        return devRepository.findByMemberId(memberId)
+                .map(DeveloperDetailDto::fromEntity)
+                .orElseThrow(()->new DMakerException(NO_DEVELOPER));
     }
 }

@@ -2,6 +2,8 @@ package com.study.devmaker.controller;
 
 
 import com.study.devmaker.dto.CreateDeveloperDto;
+import com.study.devmaker.dto.DeveloperDetailDto;
+import com.study.devmaker.dto.DeveloperDto;
 import com.study.devmaker.service.DmakerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +23,17 @@ public class DMakerController {
 
     private final DmakerService dmakerService;
 
-    @GetMapping("/")
-    public List<String> getAllDevelopers(){
+    @GetMapping("/get-devList")
+    public List<DeveloperDto> getAllDevelopers(){
         //GET /devs HTTP/1.1 요청이 오면 이게 응답함
+        log.info("GET /get-devList HTTP/1.1");
+        return dmakerService.getAllDevelopers();
+    }
+
+    @GetMapping("/get-devList/{memberId}")
+    public DeveloperDetailDto getDevelopers(@PathVariable String memberId){
         log.info("GET /devs HTTP/1.1");
-        return Arrays.asList("T","E","S","T");
+        return dmakerService.getDeveloper(memberId);
     }
 
     @PostMapping("/create-devs")
