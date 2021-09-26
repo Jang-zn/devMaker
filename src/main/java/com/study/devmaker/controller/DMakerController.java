@@ -6,6 +6,7 @@ import com.study.devmaker.exception.DMakerException;
 import com.study.devmaker.service.DmakerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +58,8 @@ public class DMakerController {
         return dmakerService.deleteDeveloper(memberId);
     }
 
+
+    @ResponseStatus(value= HttpStatus.CONFLICT)
     @ExceptionHandler(DMakerException.class)
     public DmakerResponse handleException(DMakerException e, HttpServletRequest request){
         log.error("errorCode : {}, url : {}, message : {} ",
