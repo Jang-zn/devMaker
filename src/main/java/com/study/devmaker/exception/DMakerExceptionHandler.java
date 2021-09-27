@@ -40,7 +40,7 @@ public class DMakerExceptionHandler {
                 .build();
     }
 
-
+    //예상치 못한 에러는 Exception으로 묶어서 처리 / 이후 원인파악후 추가하고 뭐 그런식으로 개선
     @ExceptionHandler(Exception.class)
     public DmakerResponse handleException(Exception e, HttpServletRequest request){
         log.error("url : {}, message : {} ",
