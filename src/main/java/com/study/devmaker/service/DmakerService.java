@@ -69,8 +69,7 @@ public class DmakerService {
 
     @Transactional
     public DeveloperDetailDto updateDeveloper(String memberId, EditDeveloperDto.Request request) {
-        validateLevelAndExp(
-                request.getDeveloperLevel(),
+        request.getDeveloperLevel().validateExperiencedYear(
                 request.getExperienceYears()
         );
         return DeveloperDetailDto.fromEntity(
@@ -114,8 +113,7 @@ public class DmakerService {
     //검증
     //비즈니스 정책에 따른 검증 수행
     private void validateCreateDeveloperRequest(@NonNull CreateDeveloperDto.Request request) {
-        validateLevelAndExp(
-                request.getDeveloperLevel(),
+        request.getDeveloperLevel().validateExperiencedYear(
                 request.getExperienceYears()
         );
         //Id중복 검증
@@ -126,11 +124,5 @@ public class DmakerService {
 
     }
 
-
-    private void validateLevelAndExp(DeveloperLevel developerLevel, int experiencedYear) {
-        if(experiencedYear<developerLevel.getMinExperiencedYear()||experiencedYear>developerLevel.getMaxExperiencedYear()){
-            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
-        }
-    }
 
 }
