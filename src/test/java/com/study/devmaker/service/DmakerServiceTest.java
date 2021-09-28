@@ -25,6 +25,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.Optional;
 
+import static com.study.devmaker.contant.DMakerConstant.MAX_JUNIOR_EXPERIENCE_YEAR;
+import static com.study.devmaker.contant.DMakerConstant.MIN_SENIOR_EXPERIENCE_YEAR;
+import static com.study.devmaker.exception.DMakerErrorCode.LEVEL_EXPERIMENT_YEAR_NOT_MATCHED;
 import static com.study.devmaker.type.DeveloperLevel.*;
 import static com.study.devmaker.type.DeveloperSkillType.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,14 +58,18 @@ class DmakerServiceTest {
                         .statusCode(StatusCode.EMPLOYED)
                         .build();
 
-    private final CreateDeveloperDto.Request request = CreateDeveloperDto.Request.builder()
-            .developerLevel(SENIOR)
-            .developerSkillType(FRONTEND)
-            .experienceYears(12)
-            .memberId("zn2309")
-            .name("JangTest")
-            .age(30)
-            .build();
+    private CreateDeveloperDto.Request getCreateRequest(
+            DeveloperLevel developerLevel, DeveloperSkillType developerSkillType, int experiencedYears
+    ){
+            return CreateDeveloperDto.Request.builder()
+                .developerLevel(developerLevel)
+                .developerSkillType(developerSkillType)
+                .experienceYears(experiencedYears)
+                .memberId("zn2309")
+                .name("JangTest")
+                .age(30)
+                .build();
+    }
 
     @Test
     public void test01(){
@@ -83,7 +90,7 @@ class DmakerServiceTest {
         given(devRepository.save(any()))
                 .willReturn(defaultDev);
         //when
-        CreateDeveloperDto.Response developer = dmakerService.createDeveloper(request);
+        CreateDeveloperDto.Response developer = dmakerService.createDeveloper(getCreateRequest(SENIOR, FRONTEND, MIN_SENIOR_EXPERIENCE_YEAR));
 
         //then
         //mocking된 객체에서 메소드 실행할때 매개변수 캡쳐해서 가지고 있는 객체
@@ -91,7 +98,7 @@ class DmakerServiceTest {
         verify(devRepository,times(1)).save(argumentCaptor.capture());
         Developer checkDev = argumentCaptor.getValue();
         assertEquals(SENIOR, checkDev.getDeveloperLevel());
-        assertEquals(12, checkDev.getExperienceYears());
+        assertEquals(MIN_SENIOR_EXPERIENCE_YEAR, checkDev.getExperienceYears());
         assertEquals(FRONTEND, checkDev.getDeveloperSkillType());
     }
 
@@ -103,9 +110,35 @@ class DmakerServiceTest {
         //when
         //then
         DMakerException dMakerException = assertThrows(DMakerException.class, ()->{
-            dmakerService.createDeveloper(request);
+            dmakerService.createDeveloper(getCreateRequest(SENIOR, FULLSTACK, MIN_SENIOR_EXPERIENCE_YEAR));
         });
 
         assertEquals(DMakerErrorCode.DUPLICATED_ID, dMakerException.getDMakerErrorCode());
+    }
+
+    @Test
+    void validateLevelAndExp_Test() {
+        //given
+
+        //when
+        //then
+        DMakerException dMakerException = assertThrows(DMakerException.class, ()->{
+            dmakerService.createDeveloper(
+                    getCreateRequest(SENIOR, FULLSTACK, MIN_SENIOR_EXPERIENCE_YEAR-1
+                    )
+            );
+        });
+        assertEquals(DMakerErrorCode.LEVEL_EXPERIMENT_YEAR_NOT_MATCHED, dMakerException.getDMakerErrorCode());
+
+        dMakerException = assertThrows(DMakerException.class, ()->{
+            dmakerService.createDeveloper(
+                    getCreateRequest(
+                            JUNIOR, FULLSTACK, MAX_JUNIOR_EXPERIENCE_YEAR+1
+                    )
+            );
+        });
+        assertEquals(
+                DMakerErrorCode.LEVEL_EXPERIMENT_YEAR_NOT_MATCHED, dMakerException.getDMakerErrorCode()
+        );
     }
 }

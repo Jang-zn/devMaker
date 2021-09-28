@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.study.devmaker.contant.DMakerConstant.MAX_JUNIOR_EXPERIENCE_YEAR;
+import static com.study.devmaker.contant.DMakerConstant.MIN_SENIOR_EXPERIENCE_YEAR;
 import static com.study.devmaker.exception.DMakerErrorCode.*;
 
 
@@ -125,17 +127,8 @@ public class DmakerService {
     }
 
 
-    private void validateLevelAndExp(DeveloperLevel developerLevel, int experimentYear) {
-        if(developerLevel ==DeveloperLevel.SENIOR
-                && experimentYear <10){
-            //정책상 발생하는 Exception은 custom Exception으로 구현해주는게 더 명확함.
-            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
-        }
-        if(developerLevel==DeveloperLevel.JUNIOR
-                && (4>experimentYear|| experimentYear>10)){
-            throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
-        }
-        if(developerLevel==DeveloperLevel.NEW&&experimentYear>4){
+    private void validateLevelAndExp(DeveloperLevel developerLevel, int experiencedYear) {
+        if(experiencedYear<developerLevel.getMinExperiencedYear()||experiencedYear>developerLevel.getMaxExperiencedYear()){
             throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
         }
     }
