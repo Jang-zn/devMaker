@@ -1,5 +1,6 @@
 package com.study.devmaker.entity;
 
+import com.study.devmaker.dto.CreateDeveloperDto;
 import com.study.devmaker.type.DeveloperLevel;
 import com.study.devmaker.type.DeveloperSkillType;
 import com.study.devmaker.type.StatusCode;
@@ -47,5 +48,6 @@ public class Developer {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
 
 }

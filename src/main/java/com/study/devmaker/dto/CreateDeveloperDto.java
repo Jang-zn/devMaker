@@ -53,7 +53,7 @@ public class CreateDeveloperDto {
 
         private String memberId;
 
-        public static Response fromEntity(Developer dev){
+        public static Response fromEntity(@NonNull Developer dev){
             return Response.builder().
                     developerLevel(dev.getDeveloperLevel()).
                     developerSkillType(dev.getDeveloperSkillType()).

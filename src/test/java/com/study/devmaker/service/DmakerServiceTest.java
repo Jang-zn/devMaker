@@ -28,6 +28,7 @@ import java.util.Optional;
 import static com.study.devmaker.type.DeveloperLevel.*;
 import static com.study.devmaker.type.DeveloperSkillType.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -78,6 +79,9 @@ class DmakerServiceTest {
         //given
         given(devRepository.findByMemberId(anyString()))
                 .willReturn(Optional.empty());
+        //return값 추가 mocking(refactoring)
+        given(devRepository.save(any()))
+                .willReturn(defaultDev);
         //when
         CreateDeveloperDto.Response developer = dmakerService.createDeveloper(request);
 

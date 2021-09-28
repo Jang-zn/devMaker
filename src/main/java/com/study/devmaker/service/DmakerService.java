@@ -33,17 +33,23 @@ public class DmakerService {
     @Transactional(readOnly = true)
     public CreateDeveloperDto.Response createDeveloper(CreateDeveloperDto.Request request){
         validateCreateDeveloperRequest(request);
-            Developer developer = Developer.builder()
-                    .developerLevel(request.getDeveloperLevel())
-                    .developerSkillType(request.getDeveloperSkillType())
-                    .experienceYears(request.getExperienceYears())
-                    .memberId(request.getMemberId())
-                    .age(request.getAge())
-                    .name(request.getName())
-                    .statusCode(StatusCode.EMPLOYED)
-                    .build();
-            devRepository.save(developer);
-            return CreateDeveloperDto.Response.fromEntity(developer);
+            return CreateDeveloperDto.Response.fromEntity(
+                    devRepository.save(
+                            developerBuildFromRequest(request)
+                    )
+            );
+    }
+
+    private Developer developerBuildFromRequest(CreateDeveloperDto.Request request) {
+        return Developer.builder()
+                .developerLevel(request.getDeveloperLevel())
+                .developerSkillType(request.getDeveloperSkillType())
+                .experienceYears(request.getExperienceYears())
+                .memberId(request.getMemberId())
+                .age(request.getAge())
+                .name(request.getName())
+                .statusCode(StatusCode.EMPLOYED)
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -56,9 +62,7 @@ public class DmakerService {
 
     @Transactional(readOnly = true)
     public DeveloperDetailDto getDeveloper(String memberId) {
-        return devRepository.findByMemberId(memberId)
-                .map(DeveloperDetailDto::fromEntity)
-                .orElseThrow(()->new DMakerException(NO_DEVELOPER));
+        return DeveloperDetailDto.fromEntity(getDevleoperByMemberId(memberId));
     }
 
     @Transactional
@@ -67,22 +71,26 @@ public class DmakerService {
                 request.getDeveloperLevel(),
                 request.getExperienceYears()
         );
-        Developer developer=devRepository
-                .findByMemberId(memberId)
-                .orElseThrow(()->new DMakerException(NO_DEVELOPER));
+        return DeveloperDetailDto.fromEntity(
+                getUpdatedDeveloperFromRequest(
+                        request, getDevleoperByMemberId(
+                                memberId)
+                )
+        );
+    }
 
+    private Developer getUpdatedDeveloperFromRequest(EditDeveloperDto.Request request, Developer developer) {
         developer.setDeveloperLevel(request.getDeveloperLevel());
         developer.setDeveloperSkillType(request.getDeveloperSkillType());
         developer.setExperienceYears(request.getExperienceYears());
-        //
-        return DeveloperDetailDto.fromEntity(developer);
+        return developer;
     }
 
     @Transactional(readOnly = true)
     public DeveloperDetailDto deleteDeveloper(String memberId) {
         //1. Employed->Retired
-        Developer developer = devRepository.findByMemberId(memberId)
-                .orElseThrow(()->new DMakerException(NO_DEVELOPER));
+        Developer developer = getDevleoperByMemberId(memberId);
+
         developer.setStatusCode(StatusCode.RETIRED);
         //2. RetiredDeveloper Table에 추가
         RetiredDeveloper retiredDeveloper = RetiredDeveloper.builder()
@@ -91,6 +99,12 @@ public class DmakerService {
                 .build();
         retiredDevRepository.save(retiredDeveloper);
         return DeveloperDetailDto.fromEntity(developer);
+    }
+
+    private Developer getDevleoperByMemberId(String memberId){
+        return devRepository
+                .findByMemberId(memberId)
+                .orElseThrow(()->new DMakerException(NO_DEVELOPER));
     }
 
 
@@ -125,6 +139,5 @@ public class DmakerService {
             throw new DMakerException(LEVEL_EXPERIMENT_YEAR_NOT_MATCHED);
         }
     }
-
 
 }
