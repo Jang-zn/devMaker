@@ -117,6 +117,7 @@ public class DmakerService {
                 request.getExperienceYears()
         );
         //Id중복 검증
+
         //변수로 받고 if문으로 null인지 아닌지 다시 확인할 필요 없음 (콜백함수, 람다식 이용 java8부터 가능한거임..)
         devRepository.findByMemberId(request.getMemberId()).ifPresent((developer -> {
             throw new DMakerException(DUPLICATED_ID);
